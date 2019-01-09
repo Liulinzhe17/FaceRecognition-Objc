@@ -17,4 +17,8 @@
 +(bool)reSampleFace:(nonnull UIImage *)rawImage;
 +(nonnull UIImage *)detectFace: (nonnull UIImage *)rawImage;
 
++ (UIImage *_Nullable)recognizeFace:(UIImage *_Nullable)rawImage;
++ (BOOL)inputImage:(UIImage *_Nonnull)image;
+
+
 @end

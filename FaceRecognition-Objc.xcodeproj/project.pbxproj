@@ -15,6 +15,9 @@
 		0C949E1C21E5A3C700DC814B /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C949E1B21E5A3C700DC814B /* main.m */; };
 		0C949E2B21E5A50F00DC814B /* NCNNWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0C949E2821E5A50F00DC814B /* NCNNWrapper.mm */; };
 		0C949E3421E5AE6F00DC814B /* res in Resources */ = {isa = PBXBuildFile; fileRef = 0C949E3321E5AE6F00DC814B /* res */; };
+		0C9E71D321E5CE26009F3174 /* openmp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C9E71D021E5CE1F009F3174 /* openmp.framework */; };
+		0C9E71D421E5CE26009F3174 /* opencv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C9E71D121E5CE26009F3174 /* opencv2.framework */; };
+		0C9E71D521E5CE26009F3174 /* ncnn.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C9E71D221E5CE26009F3174 /* ncnn.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,6 +34,9 @@
 		0C949E2821E5A50F00DC814B /* NCNNWrapper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NCNNWrapper.mm; sourceTree = "<group>"; };
 		0C949E2A21E5A50F00DC814B /* NCNNWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCNNWrapper.h; sourceTree = "<group>"; };
 		0C949E3321E5AE6F00DC814B /* res */ = {isa = PBXFileReference; lastKnownFileType = folder; path = res; sourceTree = "<group>"; };
+		0C9E71D021E5CE1F009F3174 /* openmp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = openmp.framework; sourceTree = "<group>"; };
+		0C9E71D121E5CE26009F3174 /* opencv2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = opencv2.framework; sourceTree = "<group>"; };
+		0C9E71D221E5CE26009F3174 /* ncnn.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ncnn.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -38,6 +44,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0C9E71D521E5CE26009F3174 /* ncnn.framework in Frameworks */,
+				0C9E71D421E5CE26009F3174 /* opencv2.framework in Frameworks */,
+				0C9E71D321E5CE26009F3174 /* openmp.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -47,6 +56,9 @@
 		0C949E0021E5A3C600DC814B = {
 			isa = PBXGroup;
 			children = (
+				0C9E71D221E5CE26009F3174 /* ncnn.framework */,
+				0C9E71D121E5CE26009F3174 /* opencv2.framework */,
+				0C9E71D021E5CE1F009F3174 /* openmp.framework */,
 				0C949E0B21E5A3C600DC814B /* FaceRecognition-Objc */,
 				0C949E0A21E5A3C600DC814B /* Products */,
 			);

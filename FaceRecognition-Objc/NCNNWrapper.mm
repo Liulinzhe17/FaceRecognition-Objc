@@ -612,7 +612,10 @@ void Recognize::start(const cv::Mat& img, std::vector<float>&feature)
 
 double calculSimilar(std::vector<float>& v1, std::vector<float>& v2)
 {
-    assert(v1.size() == v2.size());
+//    assert(v1.size() == v2.size());
+    if (v2.size() != v1.size()) {
+        return 0.0;
+    }
     double ret = 0.0, mod1 = 0.0, mod2 = 0.0;
     for (std::vector<double>::size_type i = 0; i != v1.size(); ++i)
     {
@@ -650,10 +653,10 @@ bool extract_sample_features(cv::Mat& image)
     std::vector<cv::Rect> bbox;
     bbox.resize(num_box);
     
-//    if (num_box != 1) {
-//        std::cout << "no face detected or too much faces" << std::endl;
-//        return false;
-//    }
+    if (num_box != 1) {
+        std::cout << "no face detected or too much faces" << std::endl;
+        return false;
+    }
     
     cv::Mat ROI(image, cv::Rect(finalBbox[0].x1, finalBbox[0].y1, finalBbox[0].x2 - finalBbox[0].x1 + 1, finalBbox[0].y2 - finalBbox[0].y1 + 1));
     
@@ -669,6 +672,7 @@ bool extract_sample_features(cv::Mat& image)
     
     return true;
 }
+
 
 void recognize_faces(cv::Mat& image)
 {
@@ -687,9 +691,8 @@ void recognize_faces(cv::Mat& image)
     std::vector<cv::Rect> bbox;
     bbox.resize(num_box);
     
-#if 1
     for(int i = 0; i < num_box; i++){
-        cv::Rect r = cv::Rect(finalBbox[0].x1, finalBbox[0].y1, finalBbox[0].x2 - finalBbox[0].x1 + 1, finalBbox[0].y2 - finalBbox[0].y1 + 1);
+        cv::Rect r = cv::Rect(finalBbox[i].x1, finalBbox[i].y1, finalBbox[i].x2 - finalBbox[i].x1 + 1, finalBbox[i].y2 - finalBbox[i].y1 + 1);
     
         (r.x < 0) && (r.x = 0);
         (r.y < 0) && (r.y = 0);
@@ -705,19 +708,19 @@ void recognize_faces(cv::Mat& image)
         }
         
         cv::Mat ROI(image, r);
-        
+
         cv::Mat croppedImage;
         std::vector<float> croppedfea;
-        
+
         // Copy the data into new matrix
         ROI.copyTo(croppedImage);
-        
+
         facenet.start(croppedImage, croppedfea);
-        
+
         double similar = calculSimilar(samplefea, croppedfea);
-        
-        // std::cout << "similarity is : " << similar << std::endl;
-        
+
+        std::cout << "similarity is : " << similar << std::endl;
+
         if (similar > 0.70) {
             rectangle(image, r, Scalar(0, 0, 255), 2, 8, 0);
         } else {
@@ -727,12 +730,32 @@ void recognize_faces(cv::Mat& image)
             }
         }
     }
+
+    clock_t finish_time = clock();
+    double total_time = (double)(finish_time - start_time) / CLOCKS_PER_SEC;
+    std::cout << "recognition face time：" << total_time * 1000 << " ms" << std::endl;
+}
+
+void detect_faces (cv::Mat& image) {
+    clock_t start_time = clock();
+    
+    ncnn::Mat ncnn_img = ncnn::Mat::from_pixels(image.data, ncnn::Mat::PIXEL_BGR2RGB, image.cols, image.rows);
+    std::vector<Bbox> finalBbox;
+    
+#if(MAXFACEOPEN==1)
+    mtcnn.detectMaxFace(ncnn_img, finalBbox);
 #else
+    mtcnn.detect(ncnn_img, finalBbox);
+#endif
+    
+    const int num_box = (int)finalBbox.size();
+    std::vector<cv::Rect> bbox;
+    bbox.resize(num_box);
+    
     for (int i = 0; i < num_box; i++) {
         bbox[i] = cv::Rect(finalBbox[i].x1, finalBbox[i].y1, finalBbox[i].x2 - finalBbox[i].x1 + 1, finalBbox[i].y2 - finalBbox[i].y1 + 1);
         
-        for (int j = 0; j<5; j = j + 1)
-        {
+        for (int j = 0; j<5; j = j + 1){
             cv::circle(image, cvPoint(finalBbox[i].ppoint[j], finalBbox[i].ppoint[j + 5]), 2, CV_RGB(0, 255, 0), CV_FILLED);
         }
     }
@@ -740,10 +763,10 @@ void recognize_faces(cv::Mat& image)
     for (vector<cv::Rect>::iterator it = bbox.begin(); it != bbox.end(); it++) {
         rectangle(image, (*it), Scalar(0, 0, 255), 2, 8, 0);
     }
-#endif
+
     clock_t finish_time = clock();
     double total_time = (double)(finish_time - start_time) / CLOCKS_PER_SEC;
-    std::cout << "time：" << total_time * 1000 << " ms" << std::endl;
+    std::cout << "detect faces time：" << total_time * 1000 << " ms" << std::endl;
 }
 
 //////////////////// MAIN PART END ////////////////////
@@ -846,14 +869,6 @@ bool initialized = false;
         return;
     }
     
-    cv::Mat bgrMat;
-    UIImage* sampleimg = [UIImage imageNamed:@"test.png"];
-    //    NSString* filePath = [[NSBundle mainBundle]
-    //                          pathForResource:@"test" ofType:@"jpg"];
-    //    UIImage* sampleimg = [UIImage imageWithContentsOfFile:filePath];
-    UIImageToMat(sampleimg, bgrMat);
-    extract_sample_features(bgrMat);
-    
     initialized = true;
 }
 
@@ -883,9 +898,23 @@ bool initialized = false;
 //    UIGraphicsEndImageContext();
 
     UIImageToMat(image, bgrMat);
-    recognize_faces(bgrMat);
+    detect_faces(bgrMat);
 
     return MatToUIImage(bgrMat);
+}
+
++ (UIImage *)recognizeFace:(UIImage *)rawImage {
+    cv:Mat bgrMat;
+    UIImage *image = rawImage;
+    UIImageToMat(image, bgrMat);
+    recognize_faces(bgrMat);
+    return MatToUIImage(bgrMat);
+}
+
++ (BOOL)inputImage:(UIImage *)image {
+    cv::Mat bgrMat;
+    UIImageToMat(image, bgrMat);
+    return extract_sample_features(bgrMat);
 }
 
 @end
